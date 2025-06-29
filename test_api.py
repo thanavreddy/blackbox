@@ -153,37 +153,55 @@ class BlackBoxAPITestCase(unittest.TestCase):
                 self.assertEqual(result["result"], expected)
     
     def test_fizzbuzz_endpoint_list_logic(self):
-        """Test /fizzbuzz endpoint - List length parity check"""
-        test_cases = [
-            # Even length lists - should return the list itself
-            ([1, 2], [1, 2]),
-            ([1, 2, 3, 4], [1, 2, 3, 4]),
-            (["a", "b"], ["a", "b"]),
-            ([1, "mixed", 3, True], [1, "mixed", 3, True]),
-            ([], []),  # Empty list (even length: 0)
-            
-            # Odd length lists - should return false
-            ([1], False),
-            ([1, 2, 3], False),
-            (["a", "b", "c"], False),
-            ([1, 2, 3, 4, 5], False),
-            
-            # Non-lists - should return false
-            ("FizzBuzz", False),
-            ("hello", False),
-            (123, False),
-            (True, False),
-            (None, False),
+        """Test /fizzbuzz endpoint - Always returns false for arrays, error for non-arrays"""
+        # Test cases for non-arrays - should return error
+        non_array_cases = [
+            "fizz",
+            "buzz", 
+            "fizzbuzz",
+            "hello",
+            "3",
+            "5",
+            3,
+            5,
+            15,
+            True,
+            False,
+            None,
         ]
         
-        for input_data, expected in test_cases:
+        for input_data in non_array_cases:
             with self.subTest(input_data=input_data):
                 response = self.app.post('/fizzbuzz',
                                        data=json.dumps({"data": input_data}),
                                        content_type='application/json')
                 self.assertEqual(response.status_code, 200)
                 result = json.loads(response.data)
-                self.assertEqual(result["result"], expected)
+                self.assertIn("error", result)
+                self.assertEqual(result["error"], "Input must be a valid JSON array")
+        
+        # Test cases for arrays - should always return false
+        array_cases = [
+            [],  # Empty array
+            [1],  # Single element
+            [1, 2],  # Two elements
+            [1, 2, 30],  # Three elements
+            ["1", "2", "30"],  # String elements
+            [[1, 2, 3], [5, 10, 15]],  # Nested arrays
+            [[3], [5], [15]],  # Array of single-element arrays
+            [[1, 2, 3, 4, 5], [10, 11, 12, 13, 14, 15]],  # Complex nested
+            [[None], [""], []],  # Mixed with null, empty string, empty array
+            [True, False, None],  # Mixed data types
+        ]
+        
+        for input_data in array_cases:
+            with self.subTest(input_data=input_data):
+                response = self.app.post('/fizzbuzz',
+                                       data=json.dumps({"data": input_data}),
+                                       content_type='application/json')
+                self.assertEqual(response.status_code, 200)
+                result = json.loads(response.data)
+                self.assertEqual(result["result"], False)
 
 
 class APIIntegrationTests(unittest.TestCase):
@@ -228,13 +246,13 @@ class APIIntegrationTests(unittest.TestCase):
         alpha_result = json.loads(response4.data)["result"]
         self.assertTrue(alpha_result)  # "testabc" starts with 't'
         
-        # Step 5: Test fizzbuzz with a list
-        test_list = [1, 2, 3, 4]  # Even length
+        # Step 5: Test fizzbuzz with a list (should always return false for arrays)
+        test_list = [1, 2, 3, 4]  # Any array
         response5 = self.app.post('/fizzbuzz',
                                 data=json.dumps({"data": test_list}),
                                 content_type='application/json')
         fizzbuzz_result = json.loads(response5.data)["result"]
-        self.assertEqual(fizzbuzz_result, test_list)
+        self.assertEqual(fizzbuzz_result, False)  # Always false for arrays
 
 
 def run_tests():

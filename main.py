@@ -70,12 +70,10 @@ def fizzbuzz():
     data = request.json.get('data')
 
     if not isinstance(data, list):
-        return jsonify({"result": False})
+        return jsonify({"error": "Input must be a valid JSON array"})
 
-    if len(data) % 2 == 0:
-        return jsonify({"result": data})
-    else:
-        return jsonify({"result": False})
+    # Always return false for arrays (regardless of length or content)
+    return jsonify({"result": False})
 
 
 
