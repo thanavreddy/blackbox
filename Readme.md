@@ -1,6 +1,12 @@
 # Black Box API Decoded
 
-This project is a reverse-engineering challenge involving a set of undocumented API endpoints hosted on a simulated malfunctioning system. Each endpoint behaves unpredictably with no official documentation, and the task was to deduce their hidden logic through carefully crafted requests and analysis of responses.
+This project is a reverse-engineering challenge involving a set of undocumented API endpoints hosted on a sim**Hid**Hidden Behavior (Final Decoded Logic):**
+
+
+* If `data` is **not a list/array** → returns an error message: `"Input must be a valid JSON array"`
+* If `data` is **a list/array** (regardless of length or content) → always returns `false`
+
+> **Note:** The endpoint name is a complete decoy — there's no actual fizzbuzz number check happening. It simply validates if the input is an array and always returns false for arrays.alfunctioning system. Each endpoint behaves unpredictably with no official documentation, and the task was to deduce their hidden logic through carefully crafted requests and analysis of responses.
 
 ---
 
@@ -99,6 +105,8 @@ Removes all numeric digits from the string, keeping letters, spaces, and special
 { "result": "abc!!" }
 ```
 
+---
+
 ### 5) `POST /alpha`
 
 **Hidden Behavior:**
@@ -141,7 +149,19 @@ Returns `true` if the first character is an alphabet letter, else `false`.
 
 > **Note:** The endpoint name is a complete decoy — there’s no actual fizzbuzz number check happening.
 
-**Example Input:**
+**Example Input (Non-array):**
+
+```json
+{ "data": "FizzBuzz" }
+```
+
+**Output:**
+
+```json
+{ "error": "Input must be a valid JSON array" }
+```
+
+**Example Input (Array):**
 
 ```json
 { "data": [1, 2, 3, 4] }
@@ -150,25 +170,13 @@ Returns `true` if the first character is an alphabet letter, else `false`.
 **Output:**
 
 ```json
-{ "result": [1, 2, 3, 4] }
-```
-
-**Example Input:**
-
-```json
-{ "data": [3, 5, 7] }
-```
-
-**Output:**
-
-```json
 { "result": false }
 ```
 
-**Example Input:**
+**Example Input (Empty Array):**
 
 ```json
-{ "data": "FizzBuzz" }
+{ "data": [] }
 ```
 
 **Output:**
@@ -237,9 +245,9 @@ The test suite includes:
 - ✅ **`/data`** - Base64 encoding with various inputs
 - ✅ **`/time`** - Countdown timer validation
 - ✅ **`/glitch`** - String shuffling (even) and reversing (odd)
-- ✅ **`/zap`** - Non-alphabetic character removal
+- ✅ **`/zap`** - Number removal from strings
 - ✅ **`/alpha`** - First character alphabet validation
-- ✅ **`/fizzbuzz`** - List length parity checking
+- ✅ **`/fizzbuzz`** - Array validation (error for non-arrays, false for arrays)
 - ✅ **Integration** - Multi-endpoint workflows
 
 ### Expected Test Output
