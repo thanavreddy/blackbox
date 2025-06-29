@@ -106,16 +106,17 @@ class BlackBoxAPITestCase(unittest.TestCase):
                 self.assertEqual(result["result"], expected)
     
     def test_zap_endpoint_remove_non_alpha(self):
-        """Test /zap endpoint - Remove non-alphabetic characters"""
+        """Test /zap endpoint - Remove numbers from string"""
         test_cases = [
-            ("abc123!!", "abc"),
-            ("Hello123World!", "HelloWorld"),
-            ("123456", ""),  # Only numbers
-            ("!@#$%", ""),   # Only special chars
-            ("abcDEF", "abcDEF"),  # Only letters
-            ("", ""),        # Empty string
-            ("a1b2c3", "abc"),
-            ("Test_String-123", "TestString"),
+            ("abc123!!", "abc!!"),           # Remove only numbers
+            ("Hello123World!", "HelloWorld!"), # Keep letters and punctuation
+            ("123456", ""),                  # Only numbers -> empty
+            ("!@#$%", "!@#$%"),             # Only special chars -> keep all
+            ("abcDEF", "abcDEF"),           # Only letters -> keep all
+            ("", ""),                        # Empty string
+            ("a1b2c3", "abc"),              # Mixed -> remove numbers only
+            ("Test_String-123", "Test_String-"), # Keep underscores, hyphens
+            ("Hello 123 World!", "Hello  World!"), # Keep spaces
         ]
         
         for input_str, expected in test_cases:
@@ -195,20 +196,20 @@ class APIIntegrationTests(unittest.TestCase):
     
     def test_complete_workflow(self):
         """Test a complete workflow using multiple endpoints"""
-        # Step 1: Use /zap to clean a string
-        dirty_string = "test123!@#"
+        # Step 1: Use /zap to remove numbers from a string
+        dirty_string = "test123abc456"  # Use a string that becomes even length after cleaning
         response1 = self.app.post('/zap',
                                 data=json.dumps({"data": dirty_string}),
                                 content_type='application/json')
         clean_result = json.loads(response1.data)["result"]
-        self.assertEqual(clean_result, "test")
+        self.assertEqual(clean_result, "testabc")  # Numbers removed, 7 chars (odd length)
         
-        # Step 2: Use /glitch on the cleaned string (even length - should shuffle)
+        # Step 2: Use /glitch on the cleaned string (odd length - should reverse)
         response2 = self.app.post('/glitch',
                                 data=json.dumps({"data": clean_result}),
                                 content_type='application/json')
         glitch_result = json.loads(response2.data)["result"]
-        self.assertEqual(sorted(glitch_result), sorted("test"))
+        self.assertEqual(glitch_result, "cbatset")  # "testabc" reversed
         
         # Step 3: Encode the result with /data
         response3 = self.app.post('/data',
@@ -218,14 +219,14 @@ class APIIntegrationTests(unittest.TestCase):
         
         # Verify the base64 encoding
         decoded_back = base64.b64decode(encoded_result).decode('utf-8')
-        self.assertEqual(sorted(decoded_back), sorted("test"))
+        self.assertEqual(decoded_back, "cbatset")
         
         # Step 4: Check if original clean string starts with alphabet
         response4 = self.app.post('/alpha',
                                 data=json.dumps({"data": clean_result}),
                                 content_type='application/json')
         alpha_result = json.loads(response4.data)["result"]
-        self.assertTrue(alpha_result)  # "test" starts with 't'
+        self.assertTrue(alpha_result)  # "testabc" starts with 't'
         
         # Step 5: Test fizzbuzz with a list
         test_list = [1, 2, 3, 4]  # Even length

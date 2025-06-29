@@ -46,15 +46,14 @@ def post_glitch():
         result=data[::-1]
     return jsonify({"result": result})
 
+
 @app.route('/zap',methods=['POST'])
 def exclude_number():
     data=request.json.get('data','')
     res=""
-    temp=[]
     for x in data:
-        if x.isalpha():
+        if not x.isdigit():  # Keep everything that's NOT a digit
             res += x
-
     return jsonify({'result':res})
 
 @app.route('/alpha',methods=['POST'])

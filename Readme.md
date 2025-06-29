@@ -85,21 +85,19 @@ Returns the remaining seconds to a preset future timestamp (95 days from server 
 ### 4) `POST /zap`
 
 **Hidden Behavior:**
-Removes all non-alphabetic characters from the string.
+Removes all numeric digits from the string, keeping letters, spaces, and special characters.
 
 **Example Input:**
 
-```json
+``` json
 { "data": "abc123!!" }
 ```
 
 **Output:**
 
 ```json
-{ "result": "abc" }
+{ "result": "abc!!" }
 ```
-
----
 
 ### 5) `POST /alpha`
 
