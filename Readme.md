@@ -3,11 +3,6 @@
 This project is a reverse-engineering challenge involving a set of undocumented API endpoints hosted on a sim**Hid**Hidden Behavior (Final Decoded Logic):**
 
 
-* If `data` is **not a list/array** → returns an error message: `"Input must be a valid JSON array"`
-* If `data` is **a list/array** (regardless of length or content) → always returns `false`
-
-> **Note:** The endpoint name is a complete decoy — there's no actual fizzbuzz number check happening. It simply validates if the input is an array and always returns false for arrays.alfunctioning system. Each endpoint behaves unpredictably with no official documentation, and the task was to deduce their hidden logic through carefully crafted requests and analysis of responses.
-
 ---
 
 ## Tech Stack
@@ -140,14 +135,11 @@ Returns `true` if the first character is an alphabet letter, else `false`.
 
 ###  6) `POST /fizzbuzz`
 
-**Hidden Behavior (Final Decoded Logic):**
+* If `data` is **not a list/array** → returns an error message: `"Input must be a valid JSON array"`
+* If `data` is **a list/array** (regardless of length or content) → always returns `false`
 
-* If `data` is **not a list** → returns `false`
-* If `data` is a **list with even length** → returns the list itself
-* elements in the list can be any datatype !!
-* If `data` is a **list with odd length** → returns `false`
+> **Note:** The endpoint name is a complete decoy — there's no actual fizzbuzz number check happening. It simply validates if the input is an array and always returns false for arrays.alfunctioning system. Each endpoint behaves unpredictably with no official documentation, and the task was to deduce their hidden logic through carefully crafted requests and analysis of responses.
 
-> **Note:** The endpoint name is a complete decoy — there’s no actual fizzbuzz number check happening.
 
 **Example Input (Non-array):**
 
