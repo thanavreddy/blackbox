@@ -1,6 +1,6 @@
 # Black Box API Decoded
 
-This project is a reverse-engineering challenge involving a set of undocumented API endpoints hosted on a sim**Hid**Hidden Behavior (Final Decoded Logic):**
+This project is a reverse-engineering challenge involving a set of undocumented API endpoints hosted on a Hidden Behavior (Final Decoded Logic):**
 
 
 ---
